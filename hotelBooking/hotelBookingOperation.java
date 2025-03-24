@@ -49,26 +49,33 @@ public class hotelBookingOperation {
     }
 
     //read : Display all bookings
-    public static void showBooking(){
-        String sql = "select * from bookings"; 
-        try(Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql))
-            {
-                System.out.println("\n🔍 All bookings:");
-                while(rs.next()) {
-                    System.out.println("ID: " + rs.getInt("id") +
-                                    ", Name: " + rs.getString("guest_name")+
-                                    ", Room: "+ rs.getString("room_type")+
-                                    ", Room Number: "+ rs.getInt("room_no")+
-                                    ", Check-in: "+ rs.getDate("check_in")+
-                                    ", Check-Out: "+ rs.getDate("check_out"));                     
-                }
-
-            }catch(SQLException e){
-                e.printStackTrace();
+    public static String showBooking() {
+        String sql = "SELECT * FROM bookings"; 
+        StringBuilder bookings = new StringBuilder();
+        
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            
+            while (rs.next()) {
+                bookings.append("ID: ").append(rs.getInt("booking_id"))
+                        .append(", Name: ").append(rs.getString("guest_name"))
+                        .append(", Room: ").append(rs.getString("room_type"))
+                        .append(", Room Number: ").append(rs.getInt("room_no"))
+                        .append(", Check-in: ").append(rs.getDate("check_in"))
+                        .append(", Check-Out: ").append(rs.getDate("check_out"))
+                        .append("\n");                     
             }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error fetching bookings!";
+        }
+        
+        return bookings.toString().isEmpty() ? "No bookings available!" : bookings.toString();
     }
+    
+    
 
     //Modify exsisting bookings
     public static void updateBookings(int id , String newRoomType ){
